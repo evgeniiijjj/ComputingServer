@@ -40,7 +40,6 @@ public class Client implements Runnable {
             }
             scanner.close();
             socketChannel.close();
-            new Thread(new Client()).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
