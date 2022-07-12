@@ -22,12 +22,12 @@ public class Handler implements Runnable {
     @Override
     public void run() {
         try {
-            ByteBuffer input = ByteBuffer.allocate(2 << 2);
+            ByteBuffer input = ByteBuffer.allocate(2 << 10);
             int readBytes = socket.read(input);
             String in = new String(input.array(), 0, readBytes, StandardCharsets.UTF_8).trim();
             if (!in.equalsIgnoreCase("end")) {
                 key.interestOps(SelectionKey.OP_WRITE);
-                ByteBuffer output = ByteBuffer.wrap(calculationFibonacciNumbers(Integer.parseInt(in)).getBytes(StandardCharsets.UTF_8));
+                ByteBuffer output = ByteBuffer.wrap(removingSpaces(in).getBytes(StandardCharsets.UTF_8));
                 socket.write(output);
                 key.interestOps(SelectionKey.OP_READ);
             } else {
@@ -39,16 +39,7 @@ public class Handler implements Runnable {
         }
     }
 
-    private String calculationFibonacciNumbers(int sequenceNumber) {
-        BigInteger prev = BigInteger.ZERO;
-        BigInteger last = BigInteger.ZERO;
-        BigInteger buff;
-        for (int i = 0; i < sequenceNumber; i++) {
-            buff = last.add(prev);
-            prev = last;
-            last = buff;
-            if (i == 1) last = last.add(BigInteger.ONE);
-        }
-        return last.toString();
+    private String removingSpaces(String string) {
+        return string.replaceAll("\\s+", "");
     }
 }

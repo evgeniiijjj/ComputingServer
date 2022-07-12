@@ -21,22 +21,16 @@ public class Client implements Runnable {
     public void run() {
         try {
             while (true) {
-                System.out.println("Введите порядковый номер числа или end для завершения");
-                try {
-                    String in = scanner.nextLine();
-                    if (in.equalsIgnoreCase("end")) {
-                        socketChannel.write(ByteBuffer.wrap(in.getBytes()));
-                        break;
-                    }
-                    int count = Integer.parseInt(in);
-                    if (count == 0) throw new NumberFormatException();
+                System.out.println("Введите строку текста или end для завершения");
+                String in = scanner.nextLine();
+                if (in.equalsIgnoreCase("end")) {
                     socketChannel.write(ByteBuffer.wrap(in.getBytes()));
-                    int readBytes = socketChannel.read(input);
-                    System.out.println(new String(input.array(), 0, readBytes, StandardCharsets.UTF_8));
-                    input.clear();
-                } catch (NumberFormatException e) {
-                    System.out.println("Ввод некорректен повторите ввод");
+                    break;
                 }
+                socketChannel.write(ByteBuffer.wrap(in.getBytes()));
+                int readBytes = socketChannel.read(input);
+                System.out.println(new String(input.array(), 0, readBytes, StandardCharsets.UTF_8));
+                input.clear();
             }
             scanner.close();
             socketChannel.close();
