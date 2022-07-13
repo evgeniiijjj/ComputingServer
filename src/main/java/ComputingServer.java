@@ -15,7 +15,7 @@ public class ComputingServer implements Runnable {
         channel.socket().bind(new InetSocketAddress(port));
         channel.configureBlocking(false);
         SelectionKey key = channel.register(selector, SelectionKey.OP_ACCEPT);
-        key.attach(new Connector(channel, selector));
+        key.attach(new Acceptor(channel, selector));
     }
 
     @Override
