@@ -3,11 +3,11 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-public class Connector implements Runnable {
+public class Acceptor implements Runnable {
     private final ServerSocketChannel socketChannel;
     private final Selector selector;
 
-    public Connector(ServerSocketChannel socketChannel, Selector selector) {
+    public Acceptor(ServerSocketChannel socketChannel, Selector selector) {
         this.socketChannel = socketChannel;
         this.selector = selector;
     }

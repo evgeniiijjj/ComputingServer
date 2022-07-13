@@ -8,13 +8,11 @@ import java.util.Scanner;
 public class Client implements Runnable {
     private final Scanner scanner;
     private final SocketChannel socketChannel;
-    private final ByteBuffer input;
 
     public Client() throws IOException {
         scanner = new Scanner(System.in);
         socketChannel = SocketChannel.open();
         socketChannel.connect(new InetSocketAddress("localhost", 8085));
-        input = ByteBuffer.allocate(2 << 10);
     }
 
     @Override
@@ -23,19 +21,30 @@ public class Client implements Runnable {
             while (true) {
                 System.out.println("Введите строку текста или end для завершения");
                 String in = scanner.nextLine();
+                socketChannel.write(ByteBuffer.wrap(in.getBytes()));
                 if (in.equalsIgnoreCase("end")) {
-                    socketChannel.write(ByteBuffer.wrap(in.getBytes()));
                     break;
                 }
-                socketChannel.write(ByteBuffer.wrap(in.getBytes()));
-                int readBytes = socketChannel.read(input);
-                System.out.println(new String(input.array(), 0, readBytes, StandardCharsets.UTF_8));
-                input.clear();
+                System.out.println(read());
             }
             scanner.close();
             socketChannel.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String read() throws IOException {
+        ByteBuffer input = ByteBuffer.allocate(2 << 10);
+        StringBuilder sb = new StringBuilder();
+        int readBytes = socketChannel.read(input);
+        socketChannel.configureBlocking(false);
+        while (readBytes > 0) {
+            sb.append(new String(input.array(), 0, readBytes, StandardCharsets.UTF_8));
+            input.clear();
+            readBytes = socketChannel.read(input);
+        }
+        socketChannel.configureBlocking(true);
+        return sb.toString();
     }
 }

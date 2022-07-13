@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -22,12 +21,10 @@ public class Handler implements Runnable {
     @Override
     public void run() {
         try {
-            ByteBuffer input = ByteBuffer.allocate(2 << 10);
-            int readBytes = socket.read(input);
-            String in = new String(input.array(), 0, readBytes, StandardCharsets.UTF_8).trim();
-            if (!in.equalsIgnoreCase("end")) {
+            String input = read();
+            if (!input.equalsIgnoreCase("end")) {
                 key.interestOps(SelectionKey.OP_WRITE);
-                ByteBuffer output = ByteBuffer.wrap(removingSpaces(in).getBytes(StandardCharsets.UTF_8));
+                ByteBuffer output = ByteBuffer.wrap(removingSpaces(input).getBytes(StandardCharsets.UTF_8));
                 socket.write(output);
                 key.interestOps(SelectionKey.OP_READ);
             } else {
@@ -37,6 +34,18 @@ public class Handler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String read() throws IOException {
+        ByteBuffer input = ByteBuffer.allocate(2 << 10);
+        StringBuilder sb = new StringBuilder();
+        int readBytes = socket.read(input);
+        while (readBytes > 0) {
+            sb.append(new String(input.array(), 0, readBytes, StandardCharsets.UTF_8));
+            input.clear();
+            readBytes = socket.read(input);
+        }
+        return sb.toString();
     }
 
     private String removingSpaces(String string) {
