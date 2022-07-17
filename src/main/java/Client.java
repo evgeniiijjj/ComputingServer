@@ -27,7 +27,7 @@ public class Client implements Runnable {
                         break;
                     }
                     int count = Integer.parseInt(in);
-                    if (count == 0) throw new NumberFormatException();
+                    if (count < 1) throw new NumberFormatException();
                     socketChannel.write(ByteBuffer.wrap(in.getBytes()));
                     System.out.println(read());
                 } catch (NumberFormatException e) {
