@@ -47,7 +47,7 @@ public class Handler implements Runnable {
             buff = last.add(prev);
             prev = last;
             last = buff;
-            if (i == 1) last = last.add(BigInteger.ONE);
+            if (i == 1) last = BigInteger.ONE;
         }
         return last.toString();
     }
